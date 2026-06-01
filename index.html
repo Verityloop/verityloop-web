@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+
+<html data-theme="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="light dark" name="color-scheme"/>
+<meta content="Verityloop is a practical record of private infrastructure, DNS, email, remote access, self-hosted services, hardware troubleshooting, and support work." name="description"/>
+<title>Verityloop</title>
+<link href="favicon.svg" rel="icon" type="image/svg+xml"/>
+<meta content="#f7f6f1" media="(prefers-color-scheme: light)" name="theme-color"/>
+<meta content="#101418" media="(prefers-color-scheme: dark)" name="theme-color"/>
+<style>
+    :root {
+      --bg: #f7f6f1;
+      --paper: #fffefa;
+      --paper-2: #f0eee7;
+      --ink: #18202a;
+      --muted: #5f6872;
+      --faint: #8c9299;
+      --line: #d7d2c7;
+      --line-strong: #b9b1a4;
+      --accent: #204f6d;
+      --accent-2: #366d63;
+      --mark: #163d53;
+      --code-bg: #efede6;
+      --shadow: 0 18px 45px rgba(24, 32, 42, .08);
+      --max: 1120px;
+      --measure: 74ch;
+      --sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #101418;
+      --paper: #151b21;
+      --paper-2: #11171d;
+      --ink: #ece7dc;
+      --muted: #b8b0a3;
+      --faint: #8d877d;
+      --line: #2e3740;
+      --line-strong: #4a5661;
+      --accent: #8bc7ee;
+      --accent-2: #9fd1c1;
+      --mark: #9fd1c1;
+      --code-bg: #0d1116;
+      --shadow: 0 18px 45px rgba(0, 0, 0, .28);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      background: var(--bg);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.55;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .progress {
+      position: fixed;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 3px;
+      z-index: 80;
+      background: transparent;
+    }
+
+    .progress__bar {
+      display: block;
+      height: 100%;
+      width: 100%;
+      transform-origin: left center;
+      transform: scaleX(0);
+      background: var(--accent);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration-thickness: 1px;
+      text-underline-offset: .18em;
+    }
+
+    a:hover { color: var(--accent-2); }
+
+    button, a { -webkit-tap-highlight-color: transparent; }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+    }
+
+    .wrap {
+      width: min(var(--max), calc(100% - 40px));
+      margin-inline: auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .nav {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: .7rem;
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+
+    .mark {
+      width: 30px;
+      height: 30px;
+      color: var(--mark);
+      flex: none;
+    }
+
+    .brand small {
+      display: block;
+      margin-top: -.08rem;
+      color: var(--faint);
+      font: 500 .72rem var(--mono);
+      letter-spacing: .01em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: .25rem;
+    }
+
+    .nav-links a,
+    .nav-links button {
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      font: 600 .88rem var(--sans);
+      padding: .55rem .7rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .nav-links a:hover,
+    .nav-links button:hover {
+      color: var(--ink);
+      background: var(--paper-2);
+    }
+
+    main {
+      padding-bottom: 4rem;
+    }
+
+    .hero {
+      padding: 5.2rem 0 3.3rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 3rem;
+      align-items: end;
+    }
+
+    .eyebrow {
+      margin: 0 0 .95rem;
+      color: var(--faint);
+      font: 600 .8rem var(--mono);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 13ch;
+      font-size: clamp(3.2rem, 9vw, 7.6rem);
+      line-height: .89;
+      letter-spacing: -.08em;
+      font-weight: 760;
+    }
+
+    .intro {
+      max-width: var(--measure);
+      margin: 1.6rem 0 0;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 1.45vw, 1.24rem);
+    }
+
+    .intro strong { color: var(--ink); font-weight: 680; }
+
+    .index-card {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      padding: 1rem;
+    }
+
+    .index-card h2 {
+      margin: 0 0 .85rem;
+      color: var(--muted);
+      font: 700 .78rem var(--mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .index-card ol {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: .15rem;
+      counter-reset: nav;
+    }
+
+    .index-card a {
+      display: grid;
+      grid-template-columns: 2.1rem 1fr;
+      gap: .5rem;
+      padding: .5rem .35rem;
+      color: var(--ink);
+      text-decoration: none;
+      border-radius: 6px;
+      counter-increment: nav;
+    }
+
+    .index-card a::before {
+      content: counter(nav, decimal-leading-zero);
+      color: var(--faint);
+      font: 650 .75rem var(--mono);
+    }
+
+    .index-card a:hover {
+      background: var(--paper-2);
+    }
+
+    section {
+      padding: 3.2rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .section-title {
+      position: sticky;
+      top: 92px;
+    }
+
+    .section-title h2 {
+      margin: 0 0 .55rem;
+      font-size: 1.2rem;
+      letter-spacing: -.025em;
+    }
+
+    .section-title p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    .prose {
+      max-width: var(--measure);
+    }
+
+    .prose p {
+      margin: 0 0 1rem;
+      color: var(--muted);
+    }
+
+    .prose p.lede {
+      color: var(--ink);
+      font-size: 1.08rem;
+    }
+
+    .plain-list {
+      display: grid;
+      gap: 1rem;
+      margin: 1.3rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .plain-list li {
+      border-left: 2px solid var(--line-strong);
+      padding-left: 1rem;
+    }
+
+    .plain-list strong {
+      display: block;
+      margin-bottom: .25rem;
+    }
+
+    .plain-list span {
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      background: var(--paper);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+      font-size: .94rem;
+    }
+
+    #access .prose {
+      max-width: none;
+    }
+
+    #access .table-wrap {
+      overflow: visible;
+    }
+
+    #access table {
+      min-width: 0;
+      table-layout: fixed;
+    }
+
+    #access th:first-child,
+    #access td:first-child {
+      width: 18%;
+    }
+
+    #access th:nth-child(2),
+    #access td:nth-child(2) {
+      width: 26%;
+    }
+
+    caption {
+      text-align: left;
+      padding: .85rem 1rem;
+      color: var(--muted);
+      border-bottom: 1px solid var(--line);
+      font-size: .9rem;
+    }
+
+    th, td {
+      padding: .85rem 1rem;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    th {
+      width: 16%;
+      color: var(--muted);
+      font: 700 .76rem var(--mono);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      background: var(--paper-2);
+    }
+
+    td code,
+    .inline-code {
+      font-family: var(--mono);
+      font-size: .88em;
+      background: var(--code-bg);
+      padding: .08rem .24rem;
+      border-radius: 4px;
+    }
+
+    .note {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--muted);
+    }
+
+    .note strong { color: var(--ink); }
+
+
+    .contact-card {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      padding: 1rem;
+      max-width: var(--measure);
+    }
+
+    .contact-card p {
+      margin: 0 0 .75rem;
+      color: var(--muted);
+    }
+
+    .contact-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .contact-card a {
+      font-weight: 650;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .support-notes {
+      grid-template-columns: 1fr;
+    }
+
+    .support-notes .feature-case,
+    .support-notes .case:not(.feature-case) {
+      grid-column: 1 / -1;
+    }
+
+    .case {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      padding: 1rem;
+    }
+
+    .case h3 {
+      margin: 0 0 .6rem;
+      font-size: 1.05rem;
+    }
+
+    .case p {
+      margin: 0 0 .85rem;
+      color: var(--muted);
+    }
+
+
+    .guide-example {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .guide-example summary {
+      cursor: pointer;
+      color: var(--accent);
+      font-weight: 650;
+    }
+
+    .guide-example p {
+      margin-top: .85rem;
+    }
+
+    .guide-example ul {
+      margin: .85rem 0 0;
+      padding-left: 1.2rem;
+      color: var(--muted);
+    }
+
+    .guide-example li {
+      margin-bottom: .45rem;
+    }
+
+    .guide-shots {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .guide-shots figure {
+      margin: 0;
+    }
+
+    .guide-shots img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      background: var(--paper);
+    }
+
+    .guide-shots figcaption {
+      margin-top: .45rem;
+      color: var(--faint);
+      font-size: .88rem;
+    }
+
+    .guide-steps {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .guide-steps figure {
+      margin: 0;
+      padding: .75rem;
+      border: 1px solid var(--line);
+      background: var(--paper);
+    }
+
+    .guide-steps img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .guide-steps figcaption {
+      margin-top: .55rem;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+
+    .feature-case {
+      grid-column: 1 / -1;
+    }
+
+    .case-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .75rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .case-meta div {
+      border-left: 2px solid var(--line-strong);
+      padding-left: .75rem;
+    }
+
+    .case-meta strong {
+      display: block;
+      margin-bottom: .18rem;
+      color: var(--ink);
+      font: 650 .78rem var(--mono);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .case-meta span {
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .case dl {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: .42rem .85rem;
+      margin: 0;
+      font-size: .92rem;
+    }
+
+    .case dt {
+      color: var(--faint);
+      font: 650 .78rem var(--mono);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .case dd {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .timeline {
+      border-left: 2px solid var(--line);
+      padding-left: 1.2rem;
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .timeline article {
+      position: relative;
+    }
+
+    .timeline article::before {
+      content: "";
+      position: absolute;
+      left: calc(-1.2rem - 6px);
+      top: .35rem;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--paper);
+      border: 2px solid var(--accent);
+    }
+
+    .timeline time {
+      display: block;
+      margin-bottom: .22rem;
+      color: var(--faint);
+      font: 700 .78rem var(--mono);
+    }
+
+    .timeline h3 {
+      margin: 0 0 .25rem;
+      font-size: 1.03rem;
+    }
+
+    .timeline p {
+      margin: 0;
+      color: var(--muted);
+      max-width: var(--measure);
+    }
+
+    .footer {
+      padding: 2rem 0 3rem;
+      color: var(--faint);
+      font-size: .92rem;
+    }
+
+    .footer-grid {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .contact-line {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .contact-line svg {
+      width: 18px;
+      height: 18px;
+      color: var(--mark);
+    }
+
+    .subtle-motion {
+      transition: transform 140ms ease, background-color 140ms ease, color 140ms ease;
+    }
+
+    .subtle-motion:hover {
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 900px) {
+      .hero-grid,
+      .section-grid,
+      .split {
+        grid-template-columns: 1fr;
+      }
+
+      .section-title {
+        position: static;
+      }
+
+      .index-card {
+        box-shadow: none;
+      }
+
+      .support-notes,
+      .support-notes .feature-case,
+      .support-notes .case:not(.feature-case) {
+        grid-column: 1 / -1;
+      }
+
+      .nav-links a { display: none; }
+    }
+
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 28px, var(--max)); }
+      .hero { padding-top: 3.7rem; }
+      h1 { font-size: clamp(3rem, 17vw, 5rem); }
+      .case dl { grid-template-columns: 1fr; }
+      .case-meta { grid-template-columns: 1fr; }
+      th, td { padding: .72rem .8rem; }
+
+      #access .table-wrap {
+        border: 0;
+        background: transparent;
+      }
+
+      #access table,
+      #access thead,
+      #access tbody,
+      #access tr,
+      #access td {
+        display: block;
+        width: 100%;
+      }
+
+      #access table {
+        min-width: 0;
+        font-size: .92rem;
+      }
+
+      #access thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+
+      #access tr {
+        border: 1px solid var(--line);
+        background: var(--paper);
+        margin-bottom: .75rem;
+      }
+
+      #access td {
+        display: grid;
+        grid-template-columns: 5.6rem minmax(0, 1fr);
+        gap: .75rem;
+        border-bottom: 1px solid var(--line);
+      }
+
+      #access td::before {
+        content: attr(data-label);
+        color: var(--faint);
+        font: 650 .72rem var(--mono);
+        letter-spacing: .05em;
+        text-transform: uppercase;
+      }
+
+      #access td:last-child {
+        border-bottom: 0;
+      }
+    }
+
+
+
+    @media (max-width: 760px) {
+      .table-wrap {
+        overflow: visible;
+        border: 0;
+        background: transparent;
+      }
+
+      table,
+      thead,
+      tbody,
+      tr,
+      td {
+        display: block;
+        width: 100%;
+      }
+
+      table {
+        min-width: 0;
+        font-size: .93rem;
+        border-collapse: separate;
+        border-spacing: 0;
+      }
+
+      caption {
+        display: block;
+        padding: 0 0 .75rem;
+        border-bottom: 0;
+        color: var(--muted);
+      }
+
+      thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+
+      tr {
+        border: 1px solid var(--line);
+        background: var(--paper);
+        margin-bottom: .8rem;
+      }
+
+      tr:last-child {
+        margin-bottom: 0;
+      }
+
+      td {
+        display: grid;
+        grid-template-columns: minmax(5.4rem, 7.2rem) minmax(0, 1fr);
+        gap: .7rem;
+        border-bottom: 1px solid var(--line);
+        padding: .72rem .8rem;
+        overflow-wrap: anywhere;
+      }
+
+      td::before {
+        content: attr(data-label);
+        color: var(--faint);
+        font: 650 .72rem var(--mono);
+        letter-spacing: .05em;
+        text-transform: uppercase;
+      }
+
+      td:last-child {
+        border-bottom: 0;
+      }
+
+      #access .table-wrap {
+        overflow: visible;
+      }
+
+      #access table {
+        table-layout: auto;
+      }
+
+      #access th:first-child,
+      #access td:first-child,
+      #access th:nth-child(2),
+      #access td:nth-child(2) {
+        width: auto;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+      .progress { display: none; }
+    }
+
+    @media print {
+      .site-header,
+      .progress,
+      .index-card,
+      .nav-links,
+      .footer { display: none; }
+      body { background: #fff; color: #000; }
+      section, .hero { border-bottom: 1px solid #ccc; }
+      .wrap { width: 100%; max-width: none; }
+      .section-grid { grid-template-columns: 180px 1fr; gap: 1.5rem; }
+      .section-title { position: static; }
+      .table-wrap, .case, .note { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<div aria-hidden="true" class="progress"><span class="progress__bar" id="progressBar"></span></div>
+<header class="site-header">
+<nav aria-label="Main navigation" class="wrap nav">
+<a class="brand" href="#top">
+<svg aria-hidden="true" class="mark" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M12 3.2 20.8 12 12 20.8 3.2 12 12 3.2Z"></path>
+<path d="M8.4 12h7.2"></path>
+<path d="M12 8.4v7.2"></path>
+</svg>
+<span>Verityloop <small>private infrastructure notes</small></span>
+</a>
+<div class="nav-links">
+<a href="#overview">Overview</a>
+<a href="#systems">Systems</a>
+<a href="#services">Services</a>
+<a href="#access">Access</a>
+<a href="#support">Support</a>
+<a href="#reliability">Reliability</a>
+<a href="#contact">Contact</a>
+<button id="themeToggle" type="button">Dark mode</button>
+</div>
+</nav>
+</header>
+<main id="top">
+<section class="hero">
+<div class="wrap hero-grid">
+<div>
+<p class="eyebrow">domains · private networks · self-hosted services · hardware support</p>
+<h1>Systems I actually run.</h1>
+<p class="intro">
+            I use this domain as a public record of the infrastructure work I do outside a formal job title. Most of it started as personal need: media libraries, remote access, file sharing, game servers, smart home sensors, backups, and computers I was responsible for fixing because there was no support line to call. Over time it turned into a private small-business-shaped environment: <strong>DNS, mail records, access control, service hosting, storage decisions, user support, and failure recovery.</strong>
+</p>
+</div>
+<aside aria-label="Page index" class="index-card">
+<h2>Index</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#systems">Systems</a></li>
+<li><a href="#services">Services</a></li>
+<li><a href="#access">Access model</a></li>
+<li><a href="#support">Support notes</a></li>
+<li><a href="#reliability">Reliability</a></li>
+<li><a href="#contact">Contact</a></li>
+</ol>
+</aside>
+</div>
+</section>
+<section id="overview">
+<div class="wrap section-grid">
+<div class="section-title">
+<h2>Overview</h2>
+<p>The short version of what I maintain.</p>
+</div>
+<div class="prose">
+<p class="lede">I am careful about not overstating personal projects as enterprise experience. I do not run a business network with client SLAs. I do run a real environment where people other than me use services, where access has to be understandable, and where bad storage or bad routing choices create real problems.</p>
+<p>I do not need to already know the answer to fix something. I need to understand the system well enough to find where it is failing and what a working fix has to satisfy. Most IT work becomes simple once the process is visible. The skill is knowing which simple thing applies, and when.</p>
+<p>A home lab turns into a toy pretty quickly if the only goal is to install more things. Mine is more practical than that. I care about whether a service is reachable after a restart, whether the access path makes sense to a non-technical user, whether a domain is sending mail correctly, whether a private tool has any reason to be exposed to the public internet, and whether a system can be understood well enough to fix when it fails.</p>
+<ul class="plain-list">
+<li><strong>Domain and email administration</strong><span>Cloudflare DNS for two domains, Proton custom-domain mail, TXT verification, MX records, SPF, DKIM, DMARC, and external checks with MXToolbox.</span></li>
+<li><strong>Private access by default</strong><span>ZeroTier for friend-facing services, Tailscale for personal/admin access, device approval, and segmentation between personal tools and shared tools.</span></li>
+<li><strong>Service ownership</strong><span>Plex, MediaCMS, file sharing, Kasm, Audiobookshelf, Librum, ROMM, Immich, Home Assistant, and experimental server tooling across Windows, macOS, and Linux systems.</span></li>
+<li><strong>Test environments</strong><span>Disposable virtual machines in VMware, VirtualBox, and UTM/QEMU across Windows and macOS hosts, mostly to try configurations or isolate software before it touches a machine I depend on.</span></li>
+<li><strong>Support thinking</strong><span>Remote hardware troubleshooting, PC build planning, non-technical user guidance, and reducing weird infrastructure into instructions someone else can follow.</span></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="systems">
+<div class="wrap section-grid">
+<div class="section-title">
+<h2>Systems</h2>
+<p>Current machines and why each one exists.</p>
+</div>
+<div>
+<div class="table-wrap">
+<table>
+<caption>Hardware is split by role, not by what looks most impressive on paper.</caption>
+<thead>
+<tr>
+<th>System</th>
+<th>Hardware</th>
+<th>OS</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="System">Primary workstation</td>
+<td data-label="Hardware">Ryzen 9800X3D, RTX 4070 Ti Super, 64 GB DDR5-6400 CL34, 2x 2 TB NVMe</td>
+<td data-label="OS">Windows</td>
+<td data-label="Role">Gaming, hardware testing, general workstation use, and anything that still effectively requires Windows because of anti-cheat or platform support.</td>
+</tr>
+<tr>
+<td data-label="System">Mac mini server</td>
+<td data-label="Hardware">M4 Pro, 24 GB unified memory, 500 GB internal storage, 8 TB NVMe over Thunderbolt 4, 2 TB USB HDD</td>
+<td data-label="OS">macOS</td>
+<td data-label="Role">Always-on low-power machine for CPU-heavy services, software work, AI work, Immich, SearXNG, and experimental tooling.</td>
+</tr>
+<tr>
+<td data-label="System">Portable terminal</td>
+<td data-label="Hardware">13-inch M4 MacBook Air, 24 GB unified memory, 500 GB internal storage</td>
+<td data-label="OS">macOS</td>
+<td data-label="Role">Portable admin and software machine. Small enough to use anywhere, powerful enough that it does not feel like a compromise for terminal, browser, documentation, and remote work.</td>
+</tr>
+<tr>
+<td data-label="System">Main service host</td>
+<td data-label="Hardware">i5-8400, 32 GB DDR4, 1 TB NVMe, 8 TB HDD, 2.5 GbE NIC</td>
+<td data-label="OS">Windows with Arch Linux dual boot</td>
+<td data-label="Role">Main host for shared services. It has enough CPU for the work and user count, and enough storage for media and backups.</td>
+</tr>
+<tr>
+<td data-label="System">Parts and GPU host</td>
+<td data-label="Hardware">i3-10300, GTX 1070, 16 GB DDR4, 2x 500 GB SATA SSD, 1 TB SATA SSD</td>
+<td data-label="OS">Windows</td>
+<td data-label="Role">Older parts machine kept for workloads where a GPU matters or where spare SATA SSD capacity is useful. It is not the most efficient machine, so it runs only when the role justifies it.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="note"><strong>Network note:</strong> I moved the main service host to 2.5 GbE because local transfers between NVMe-backed systems can saturate a 1 Gb link badly enough to interfere with normal use. Longer term, I would rather separate heavy local transfers with 10 GbE or dedicated local networking hardware than keep treating the shared network as if it has unlimited headroom.</p>
+</div>
+</div>
+</section>
+<section id="services">
+<div class="wrap section-grid">
+<div class="section-title">
+<h2>Services</h2>
+<p>What I maintain and what each service is for.</p>
+</div>
+<div class="table-wrap">
+<table>
+<caption>Internal hostnames and subdomains are intentionally not listed here.</caption>
+<thead>
+<tr>
+<th>Service</th>
+<th>Host</th>
+<th>Access</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Service">Plex</td>
+<td data-label="Host">Main service host</td>
+<td data-label="Access">Private network</td>
+<td data-label="Purpose">TV and movie library for me and a small group. ZeroTier keeps usage local from Plex's point of view without opening the service publicly.</td>
+</tr>
+<tr>
+<td data-label="Service">MediaCMS</td>
+<td data-label="Host">Main service host</td>
+<td data-label="Access">Private network plus domain route</td>
+<td data-label="Purpose">Private video sharing without chat-app compression. It exists because I wanted something closer to a small private video site than a file dump.</td>
+</tr>
+<tr>
+<td data-label="Service">Private file drop</td>
+<td data-label="Host">Mac mini or main service host</td>
+<td data-label="Access">Private network plus domain route</td>
+<td data-label="Purpose">Temporary file sharing with no practical size limit beyond my upload speed and storage. I am evaluating Erugo and SafeBucket for this role.</td>
+</tr>
+<tr>
+<td data-label="Service">Kasm Workspaces</td>
+<td data-label="Host">Main service host</td>
+<td data-label="Access">Personal network only</td>
+<td data-label="Purpose">Remote browsers and VNC access into my machines, mainly for moving between systems without turning every machine into a separate workflow.</td>
+</tr>
+<tr>
+<td data-label="Service">Disposable test VMs</td>
+<td data-label="Host">Windows and macOS hosts</td>
+<td data-label="Access">Local only</td>
+<td data-label="Purpose">VMware, VirtualBox, and UTM/QEMU environments for testing software, configurations, and operating systems before changes reach a machine I rely on.</td>
+</tr>
+<tr>
+<td data-label="Service">SearXNG</td>
+<td data-label="Host">Mac mini</td>
+<td data-label="Access">Personal network only</td>
+<td data-label="Purpose">Search endpoint for personal and agent-assisted research. It stays private because nobody else needs it.</td>
+</tr>
+<tr>
+<td data-label="Service">Home Assistant</td>
+<td data-label="Host">Main service host</td>
+<td data-label="Access">Personal network only</td>
+<td data-label="Purpose">Closed-loop grow tent automation for strawberries, peppers, tomatoes, spinach, microgreens, watermelon, and zucchini. ESP32/ESPHome sensors feed Home Assistant automations for climate, CO2, airflow, humidity, VPD, and lighting.</td>
+</tr>
+<tr>
+<td data-label="Service">Immich</td>
+<td data-label="Host">Mac mini</td>
+<td data-label="Access">Personal network only</td>
+<td data-label="Purpose">Phone photo backup and storage relief. This is part convenience and part keeping important photos in more than one place.</td>
+</tr>
+<tr>
+<td data-label="Service">Audiobookshelf</td>
+<td data-label="Host">Main service host</td>
+<td data-label="Access">Private network plus domain route</td>
+<td data-label="Purpose">Audiobook server with progress syncing across devices. The library is large enough that centralizing it makes more sense than copying files around.</td>
+</tr>
+<tr>
+<td data-label="Service">Librum server</td>
+<td data-label="Host">Main service host</td>
+<td data-label="Access">Private network plus domain route</td>
+<td data-label="Purpose">Ebook server, mostly for nonfiction where reading and re-reading works better than listening.</td>
+</tr>
+<tr>
+<td data-label="Service">ROMM</td>
+<td data-label="Host">Mac mini</td>
+<td data-label="Access">Private network plus domain route</td>
+<td data-label="Purpose">ROM library management with browser play through EmulatorJS, mainly so saves and old playthroughs are not tied to whichever local machine I happen to be using.</td>
+</tr>
+<tr>
+<td data-label="Service">Private automation tooling</td>
+<td data-label="Host">Mac mini and main service host</td>
+<td data-label="Access">Personal network only</td>
+<td data-label="Purpose">Research, planning, audit, and code-assistance workflows for personal projects. This stays off the shared network because it is not useful to anyone else.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="access">
+<div class="wrap section-grid">
+<div class="section-title">
+<h2>Access model</h2>
+<p>How I keep things understandable without making them public.</p>
+</div>
+<div class="prose">
+<p class="lede">I used to port-forward game servers and media services. I moved away from that because most of what I host is only meant for a few people. A private overlay network fits that reality better than a public door with more hardening layered on top.</p>
+<p>ZeroTier is the shared network because onboarding is simple for non-technical users. Install the client, enter the network code, then wait for device approval. Tailscale is my personal/admin network because it fits my own devices and private tooling better.</p>
+<p>The split is simple: shared services on ZeroTier, personal tools on Tailscale, public static pages on GitHub Pages, and no public port forwarding unless a service leaves me no reasonable alternative.</p>
+<p>For shared private services, the chain is simple: Cloudflare DNS points at the private address, Caddy handles the routing and HTTPS, and the overlay network decides who can reach it.</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Access</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Layer">Public</td>
+<td data-label="Access">Static sites only</td>
+<td data-label="Reason">Public pages belong on GitHub Pages or similar hosting, not on my internal machines.</td>
+</tr>
+<tr>
+<td data-label="Layer">Shared private</td>
+<td data-label="Access">Approved ZeroTier devices</td>
+<td data-label="Reason">Friends can access media, files, audiobooks, ebooks, ROMM, and other shared services without seeing personal/admin tools.</td>
+</tr>
+<tr>
+<td data-label="Layer">Personal/admin</td>
+<td data-label="Access">Tailscale devices</td>
+<td data-label="Reason">Admin interfaces, AI tooling, search endpoints, and remote workspaces stay in a narrower trust boundary.</td>
+</tr>
+<tr>
+<td data-label="Layer">Local host</td>
+<td data-label="Access">Machine-local or LAN-only</td>
+<td data-label="Reason">Some services do not need a domain or a private-network route at all.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="support">
+<div class="wrap section-grid">
+<div class="section-title">
+<h2>Support notes</h2>
+<p>Informal support, but real troubleshooting.</p>
+</div>
+<div class="split support-notes">
+<article class="case feature-case">
+<h3>Remote Hardware Diagnosis</h3>
+<p>
+A friend's desktop was crashing under load, then stopped reaching Windows reliably. A local shop wanted more than $150 just to diagnose it before any repair work or parts. I handled the first pass remotely through text chat, using the photos he could send and the steps I could explain clearly enough for him to follow.</p>
+<p>The first thing was not to spend money blindly. The machine was old enough that a bad repair path could cost more than it was worth, so we talked through repair value before buying anything. After that I had him test what we could isolate for free: whether it could stay on long enough to run Windows Memory Diagnostic, whether removing the GPU changed the load, and whether an older donor PSU could power the board, CPU, and drives for a simpler test.</p>
+<p>The photos were rough, but they were enough. I pointed out the 24-pin motherboard power, CPU power, SATA power, and GPU power connections from the images, then explained what needed to move and what could stay disconnected. Once the donor PSU got the system to POST, the problem stopped looking like one mystery failure and started breaking into separate pieces.</p>
+<p>By the end, we had three faults: unstable RAM, power delivery that needed replacement, and a cooler or thermal paste problem flagged by a CPU over-temperature warning, where the machine would only boot reliably on its side because gravity seated the cooler enough to make proper CPU contact. That is the part of troubleshooting I like. You start with “my computer keeps dying,” slow it down, isolate what changed, and turn it into a repair path someone can actually follow.</p>
+
+<details class="guide-example">
+<summary>What the remote troubleshooting involved</summary>
+<ul>
+<li>Started with repair-value advice before recommending parts or a full rebuild.</li>
+<li>Checked whether the system could boot far enough to run Windows Memory Diagnostic.</li>
+<li>Used user-supplied photos to identify PSU, motherboard, CPU power, SATA power, and GPU power connections.</li>
+<li>Guided a temporary PSU swap from an older donor machine while keeping the GPU removed to reduce load and simplify the test.</li>
+<li>Interpreted changing symptoms after the system posted: memory behavior, display output, and CPU over-temperature warning.</li>
+<li>Recommended cooler reseating or fresh thermal compound once the evidence pointed there.</li>
+</ul>
+</details>
+</article>
+<article class="case feature-case">
+<h3>Procedure guide example</h3>
+<p>I also write step-by-step instructions when the support problem is really a process problem. For a Windows reinstall, I walked a non-technical user through creating Windows 10 installation media from another computer, with screenshots at the points where the wrong choice could erase the wrong drive or send them down the wrong path.</p>
+<p>The guide tells them where to download the Media Creation Tool, which setup option to choose, when to insert the USB drive, and when to stop so the next step can be matched to the exact boot menu. Guides like this need to make the safe next action obvious. The user should know what to click, what to leave alone, and when to stop so I can confirm the next screen with them.</p>
+<details class="guide-example">
+<summary>View the Windows USB guide example</summary>
+<p class="note"><strong>Example:</strong> This is the kind of step-by-step support guide I write when the user needs to complete a technical task without already understanding the tool. The screenshots are used at decision points, and the wording stays practical: what to click, what to avoid, and when to stop before the next machine-specific step.</p>
+<div class="guide-steps">
+<figure>
+<img src="assets/windows-usb-step-1.webp" alt="Microsoft Windows 10 installation media download page." loading="lazy">
+<figcaption>Start on Microsoft's Windows 10 download page and download the Media Creation Tool. This can be done from any working computer.</figcaption>
+</figure>
+<figure>
+<img src="assets/windows-usb-step-2.webp" alt="Windows 10 Setup screen saying Getting a few things ready." loading="lazy">
+<figcaption>Run the downloaded tool from the computer first. The USB drive gets selected later, after the tool prepares the setup workflow.</figcaption>
+</figure>
+<figure>
+<img src="assets/windows-usb-step-3.webp" alt="Windows 10 Setup screen asking what you want to do." loading="lazy">
+<figcaption>Choose “Create installation media for another PC,” not “Upgrade this PC now.”</figcaption>
+</figure>
+<figure>
+<img src="assets/windows-usb-step-4.webp" alt="Windows 10 Setup screen for language, edition, and architecture." loading="lazy">
+<figcaption>Keep the recommended language, edition, and 64-bit architecture unless there is a specific reason to change them.</figcaption>
+</figure>
+<figure>
+<img src="assets/windows-usb-step-5.webp" alt="Windows 10 Setup screen asking which media to use." loading="lazy">
+<figcaption>Select “USB flash drive.” The tool needs an 8 GB or larger USB drive.</figcaption>
+</figure>
+<figure>
+<img src="assets/windows-usb-step-6.webp" alt="Windows 10 Setup screen for selecting a USB flash drive." loading="lazy">
+<figcaption>Select the inserted USB drive. This step will erase the USB drive, so anything important on it needs to be copied somewhere safe first.</figcaption>
+</figure>
+</div>
+<p>After the installer USB is created, I stop and handle the next step separately because the boot menu can be system dependent.</p>
+</details>
+</article>
+<article class="case">
+<h3>Proactive software diagnosis</h3>
+<p>My Mac mini was burning through disk writes at idle. The hardware was fine, so I traced it to a runaway Spotlight indexing bug re-indexing the same data in a loop, writing terabytes for no benefit and eating real, finite SSD endurance. I scoped indexing down to what was actually useful and stopped the wear.</p>
+</article>
+<article class="case">
+<h3>Hardware advice before the purchase</h3>
+<p>I get asked about upgrades and prebuilts often enough that I treat it like support work. A bad purchase becomes a support problem later.</p>
+<p>When I compare systems, I look at more than the most impressive part on the spec sheet. CPU platform, GPU class, VRAM, storage, power supply, motherboard quality, RAM configuration, upgrade path, and actual use case all matter.</p>
+<p>The goal is never to build the most expensive machine. It is to keep someone from paying too much for a system that will age poorly, be difficult to upgrade, or hide weak parts behind one impressive number.</p>
+</article>
+<article class="case">
+<h3>Private services that normal people can use</h3>
+<p>I used to send people IP addresses and ports for private services. It worked, but it was a bad interface. If someone does not already think in networks, that kind of link looks more like a game server than a website.</p>
+<p>That is a big part of why I moved toward domains, reverse proxying, and private network access. Media, file sharing, audiobooks, ebooks, and private tools are easier to use when the access path looks normal.</p>
+<p>The technical work is routing, naming, and access control. The support work is making sure the person using it does not need to care about any of that.</p>
+</article>
+</div>
+</div>
+</section>
+<section id="reliability">
+<div class="wrap section-grid">
+<div class="section-title">
+<h2>Reliability</h2>
+<p>What I do now because I learned the hard way.</p>
+</div>
+<div class="prose">
+<p class="lede">I treat reliability as a whole-system problem: power stability, thermals, firmware behavior, service restart behavior, network bottlenecks, update timing, access control, rollback paths, and backups all matter.</p>
+<p>I learned the storage side early from losing data to RAID 0 when I was younger. For my current setup, I separate irreplaceable data from replaceable media, keep local redundancy for important files, and use selective off-site storage where it makes sense.</p>
+<p>For a larger future setup, I would choose the local array and backup path together. ZFS with RAID-Z1 or RAID-Z2 is attractive for integrity, snapshots, and redundancy. RAID10 may make more sense for a personal computer with locally attached drives if it keeps the system compatible with a supported flat-rate computer backup workflow. For 5+ TB, per-TB object storage changes the cost structure enough that the best design is the one that gives me solid local fault tolerance plus an off-site copy I can afford to keep current.</p>
+<p>For monitoring, I use a lightweight approach: service logs, OS auto-start, scheduled restarts where appropriate, graceful recovery where the app supports it, and Tautulli for Plex statistics. I do not claim to run a formal monitoring stack yet.</p>
+<ul class="plain-list">
+<li><strong>Security habits</strong><span>Bitwarden, MFA, recovery keys stored offline, private overlay networks, Proton services where privacy matters, and SSH keys treated as secrets instead of convenience files.</span></li>
+<li><strong>Hardware habits</strong><span>I pay attention to the constraints that actually cause problems: power delivery, thermals, firmware behavior, RAM stability, GPU and CPU fit for workload, network bottlenecks, storage endurance, and whether a part choice creates future support issues.</span></li>
+<li><strong>Informed change habits</strong><span>For sensitive areas like BIOS settings, access control, virtualization, or service configuration, I verify the current state, understand the rollback path, and make changes deliberately. Guessing is fine in a disposable test VM, not on a system someone relies on.</span></li>
+</ul>
+</div>
+</div>
+</section>
+
+<section id="contact">
+<div class="wrap section-grid">
+<div class="section-title">
+<h2>Contact</h2>
+</div>
+<div class="contact-card">
+<p>The public contact address for this site is <a href="mailto:ddahl@verityloop.dev">ddahl@verityloop.dev</a>.</p>
+</div>
+</div>
+</section>
+
+</main>
+<footer class="footer">
+<div class="wrap footer-grid">
+<span class="contact-line">
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M12 3.2 20.8 12 12 20.8 3.2 12 12 3.2Z"></path>
+<path d="M8.4 12h7.2"></path>
+<path d="M12 8.4v7.2"></path>
+</svg>
+<span>Verityloop · <a href="mailto:ddahl@verityloop.dev">ddahl@verityloop.dev</a></span>
+</span>
+<span><a href="#top">Back to top</a>.</span>
+</div>
+</footer>
+<script>
+    (function () {
+      const root = document.documentElement;
+      const toggle = document.getElementById('themeToggle');
+      const savedTheme = localStorage.getItem('verityloop-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+      root.dataset.theme = initialTheme;
+      if (toggle) toggle.textContent = initialTheme === 'dark' ? 'Light mode' : 'Dark mode';
+
+      toggle?.addEventListener('click', () => {
+        const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        root.dataset.theme = next;
+        localStorage.setItem('verityloop-theme', next);
+        toggle.textContent = next === 'dark' ? 'Light mode' : 'Dark mode';
+      });
+
+      const progress = document.getElementById('progressBar');
+      let ticking = false;
+      const updateProgress = () => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const value = max > 0 ? window.scrollY / max : 0;
+        progress.style.transform = 'scaleX(' + Math.min(1, Math.max(0, value)) + ')';
+        ticking = false;
+      };
+      const requestTick = () => {
+        if (!ticking) {
+          window.requestAnimationFrame(updateProgress);
+          ticking = true;
+        }
+      };
+      updateProgress();
+      window.addEventListener('scroll', requestTick, { passive: true });
+      window.addEventListener('resize', requestTick);
+    })();
+  </script>
+</body>
+</html>
