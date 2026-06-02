@@ -1133,7 +1133,7 @@
 </div>
 <div class="split support-notes">
 <article class="case feature-case">
-<h3>Remote Hardware Diagnosis</h3>
+<h3>Remote hardware diagnosis</h3>
 <p>A friend's desktop was crashing under load, then stopped reaching Windows reliably. A local shop wanted more than $150 just to diagnose it before any repair work or parts. I handled the first pass remotely through text chat, using the photos he could send and the steps I could explain clearly enough for him to follow.</p>
 <p>The first thing was avoiding a blind repair path. The machine was old enough that diagnosis and parts could cost more than it was worth, so we talked through repair value before buying anything. After that I had him test what we could isolate for free: whether it could stay on long enough to run Windows Memory Diagnostic, whether removing the GPU changed the load, and whether an older donor PSU could power the board, CPU, and drives for a simpler test.</p>
 <p>The photos were rough, but they were enough. I pointed out the 24-pin motherboard power, CPU power, SATA power, and GPU power connections from the images, then explained what needed to move and what could stay disconnected. Once the donor PSU got the system to POST, the problem stopped looking like one mystery failure and started breaking into separate pieces.</p>
@@ -1147,14 +1147,14 @@
 <li>Used user-supplied photos to identify PSU, motherboard, CPU power, SATA power, and GPU power connections.</li>
 <li>Guided a temporary PSU swap from an older donor machine while keeping the GPU removed to reduce load and simplify the test.</li>
 <li>Interpreted changing symptoms after the system posted: memory behavior, display output, and CPU over-temperature warning.</li>
-<li>Recommended cooler reseating or fresh thermal compound once the evidence pointed there.</li>
+<li>Identified the cooler mount/contact issue after the system only behaved properly when the case was on its side.</li>
 </ul>
 </details>
 </article>
 <article class="case feature-case">
 <h3>Procedure guide example</h3>
 <p>I also write step-by-step instructions when the support problem is really a process problem. For a Windows reinstall, I walked a non-technical user through creating Windows 10 installation media from another computer, with screenshots at the points where the wrong choice could erase the wrong drive or send them down the wrong path.</p>
-<p>The guide tells them where to download the Media Creation Tool, which setup option to choose, when to insert the USB drive, and when to stop so the next step can be matched to the exact boot menu. Guides like this need to make the safe next action obvious. The user should know what to click, what to leave alone, and when to stop so I can confirm the next screen with them.</p>
+<p>The walkthrough covers the parts that are easy to misread: where to download the Media Creation Tool, which setup option to choose, when the USB drive gets selected, and where to stop before the machine-specific boot step.</p>
 <details class="guide-example">
 <summary>View the Windows USB guide example</summary>
 <p class="note"><strong>Actual support example:</strong> This comes from a recent walkthrough I wrote for someone creating Windows install media from another computer. I use screenshots where the choices can actually trip someone up, especially around selecting the right tool, choosing USB media, and stopping before the machine-specific boot step.</p>
@@ -1184,12 +1184,11 @@
 <figcaption>Select the inserted USB drive. This step will erase the USB drive, so anything important on it needs to be copied somewhere safe first.</figcaption>
 </figure>
 </div>
-<p>End point: USB installer created. Next step depends on the machine’s boot menu.</p>
 </details>
 </article>
 <article class="case">
 <h3>Proactive software diagnosis</h3>
-<p>My Mac mini was burning through disk writes at idle. The hardware was fine, so I traced it to a runaway Spotlight indexing bug re-indexing the same data in a loop, writing terabytes for no benefit and eating real, finite SSD endurance. I scoped indexing down to what was actually useful and stopped the wear.</p>
+<p>My Mac mini was burning through disk writes at idle. The hardware was fine, so I traced it to a runaway Spotlight indexing bug reindexing the same data in a loop, writing terabytes for no benefit and eating real, finite SSD endurance. I scoped indexing down to what was actually useful and stopped the wear.</p>
 </article>
 <article class="case">
 <h3>Hardware advice before the purchase</h3>
