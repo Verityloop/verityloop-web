@@ -1134,11 +1134,10 @@
 <div class="split support-notes">
 <article class="case feature-case">
 <h3>Remote Hardware Diagnosis</h3>
-<p>
-A friend's desktop was crashing under load, then stopped reaching Windows reliably. A local shop wanted more than $150 just to diagnose it before any repair work or parts. I handled the first pass remotely through text chat, using the photos he could send and the steps I could explain clearly enough for him to follow.</p>
-<p>The first thing was not to spend money blindly. The machine was old enough that a bad repair path could cost more than it was worth, so we talked through repair value before buying anything. After that I had him test what we could isolate for free: whether it could stay on long enough to run Windows Memory Diagnostic, whether removing the GPU changed the load, and whether an older donor PSU could power the board, CPU, and drives for a simpler test.</p>
+<p>A friend's desktop was crashing under load, then stopped reaching Windows reliably. A local shop wanted more than $150 just to diagnose it before any repair work or parts. I handled the first pass remotely through text chat, using the photos he could send and the steps I could explain clearly enough for him to follow.</p>
+<p>The first thing was avoiding a blind repair path. The machine was old enough that diagnosis and parts could cost more than it was worth, so we talked through repair value before buying anything. After that I had him test what we could isolate for free: whether it could stay on long enough to run Windows Memory Diagnostic, whether removing the GPU changed the load, and whether an older donor PSU could power the board, CPU, and drives for a simpler test.</p>
 <p>The photos were rough, but they were enough. I pointed out the 24-pin motherboard power, CPU power, SATA power, and GPU power connections from the images, then explained what needed to move and what could stay disconnected. Once the donor PSU got the system to POST, the problem stopped looking like one mystery failure and started breaking into separate pieces.</p>
-<p>By the end, we had three faults: unstable RAM, power delivery that needed replacement, and a cooler or thermal paste problem flagged by a CPU over-temperature warning, where the machine would only boot reliably on its side because gravity seated the cooler enough to make proper CPU contact. That is the part of troubleshooting I like. You start with “my computer keeps dying,” slow it down, isolate what changed, and turn it into a repair path someone can actually follow.</p>
+<p>By the end, we had three faults: unstable RAM, power delivery that needed replacement, and a failed CPU cooler mount/contact issue. The machine would only boot reliably on its side because gravity seated the cooler enough to restore proper CPU contact. That is the part of troubleshooting I like. You start with “my computer keeps dying,” slow it down, isolate what changed, and turn it into a repair path someone can actually follow.</p>
 
 <details class="guide-example">
 <summary>What the remote troubleshooting involved</summary>
@@ -1158,7 +1157,7 @@ A friend's desktop was crashing under load, then stopped reaching Windows reliab
 <p>The guide tells them where to download the Media Creation Tool, which setup option to choose, when to insert the USB drive, and when to stop so the next step can be matched to the exact boot menu. Guides like this need to make the safe next action obvious. The user should know what to click, what to leave alone, and when to stop so I can confirm the next screen with them.</p>
 <details class="guide-example">
 <summary>View the Windows USB guide example</summary>
-<p class="note"><strong>Example:</strong> This is the kind of step-by-step support guide I write when the user needs to complete a technical task without already understanding the tool. The screenshots are used at decision points, and the wording stays practical: what to click, what to avoid, and when to stop before the next machine-specific step.</p>
+<p class="note"><strong>Actual support example:</strong> This comes from a recent walkthrough I wrote for someone creating Windows install media from another computer. I use screenshots where the choices can actually trip someone up, especially around selecting the right tool, choosing USB media, and stopping before the machine-specific boot step.</p>
 <div class="guide-steps">
 <figure>
 <img src="assets/windows-usb-step-1.webp" alt="Microsoft Windows 10 installation media download page." loading="lazy">
@@ -1185,7 +1184,7 @@ A friend's desktop was crashing under load, then stopped reaching Windows reliab
 <figcaption>Select the inserted USB drive. This step will erase the USB drive, so anything important on it needs to be copied somewhere safe first.</figcaption>
 </figure>
 </div>
-<p>After the installer USB is created, I stop and handle the next step separately because the boot menu can be system dependent.</p>
+<p>End point: USB installer created. Next step depends on the machine’s boot menu.</p>
 </details>
 </article>
 <article class="case">
